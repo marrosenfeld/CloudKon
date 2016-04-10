@@ -21,9 +21,4 @@ public class LocalQueue extends AbstractQueue {
 		return this.queue.poll();
 	}
 
-	@Override
-	public Boolean isEmpty() {
-		return this.queue.isEmpty();
-	}
-
 }

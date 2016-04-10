@@ -3,6 +3,21 @@
   <groupId>hawk.iit.edu</groupId>
   <artifactId>cloudKon</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <dependencyManagement>
+	    <dependencies>
+  			<dependency>
+				<groupId>com.amazonaws</groupId>
+				<artifactId>aws-java-sdk-sqs</artifactId>
+				<version>1.10.68</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>	
+	<dependencies>
+  		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-sqs</artifactId>
+		</dependency>
+	</dependencies>	
   <build>
 	    <plugins>
 	        <plugin>
@@ -14,6 +29,24 @@
 	                <target>1.7</target>
 	            </configuration>
 	        </plugin>
+	        <plugin>
+       			<artifactId>maven-assembly-plugin</artifactId>
+        		<executions>
+          			<execution>
+            			<phase>package</phase>
+            			<goals>
+			            	<goal>single</goal>
+			            </goals>
+          			</execution>
+        		</executions>
+        		<configuration>
+        			<finalName>cloudKon</finalName>
+	          		<descriptorRefs>
+	            		<descriptorRef>jar-with-dependencies</descriptorRef>
+	          		</descriptorRefs>
+	          		<appendAssemblyId>false</appendAssemblyId>
+        		</configuration>
+      		</plugin>
 	    </plugins>
 	</build>
 </project>

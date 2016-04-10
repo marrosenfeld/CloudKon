@@ -8,5 +8,4 @@ public interface Queue {
 
 	Task pop();
 
-	Boolean isEmpty();
 }

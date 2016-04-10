@@ -32,7 +32,7 @@ public class Client {
 			Task task = this.resultQueue.pop();
 			if (task != null) {
 				completedTasks++;
-				System.out.println("Received completed task: " + completedTasks);
+				System.out.println("Received completed task: " + task.getId());
 			} else {
 				Thread.sleep(10);
 			}

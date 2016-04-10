@@ -7,10 +7,12 @@ import cloudKon.client.Client;
 import cloudKon.client.ClientThread;
 import cloudKon.queue.LocalQueue;
 import cloudKon.queue.Queue;
+import cloudKon.queue.SQSQueue;
+import cloudKon.worker.Worker;
 import cloudKon.worker.WorkerPool;
 import cloudKon.worker.WorkerPoolThread;
 
-public class Main {
+public class CloudKon {
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, InterruptedException {
 		if (args[0].equalsIgnoreCase("client"))
@@ -21,31 +23,37 @@ public class Main {
 		System.out.println("End");
 	}
 
-	private static void startWorker(String[] args) {
-		// String queueName = null;
-		// Integer poolSize = null;
-		// for (int i = 0; i < args.length; i++) {
-		// switch (args[i]) {
-		// case "-s":
-		// queueName = args[i + 1];
-		// break;
-		// case "-t":
-		// poolSize = Integer.valueOf(args[i + 1]);
-		// break;
-		// }
-		// }
-		//
-		// if ((queueName == null || queueName.isEmpty()) || (poolSize == null))
-		// {
-		// throw new RuntimeException("Invalid arguments");
-		// }
-		//
-		// if (queueName.equalsIgnoreCase("LOCAL")) {
-		// sourceQueue = new LocalQueue();
-		// resultQueue = new LocalQueue();
-		// client = new Client(sourceQueue, resultQueue, filename);
-		// client.doExperiment();
-		// }
+	private static void startWorker(String[] args) throws InterruptedException {
+		String queueName = null;
+		Integer poolSize = null;
+		Queue sourceQueue;
+		Queue resultQueue;
+		Worker worker;
+
+		for (int i = 0; i < args.length; i++) {
+			switch (args[i]) {
+			case "-s":
+				queueName = args[i + 1];
+				break;
+			case "-t":
+				poolSize = Integer.valueOf(args[i + 1]);
+				break;
+			}
+
+		}
+
+		if ((queueName == null || queueName.isEmpty()) || (poolSize == null)) {
+			throw new RuntimeException("Invalid arguments");
+		}
+
+		sourceQueue = new SQSQueue("default", queueName);
+		resultQueue = new SQSQueue("default", queueName.concat("-response"));
+
+		// start worker pool thread
+		WorkerPool workerPool = new WorkerPool(poolSize, sourceQueue, resultQueue);
+		WorkerPoolThread workerPoolThread = new WorkerPoolThread(workerPool);
+		workerPoolThread.start();
+		workerPoolThread.join();
 
 	}
 
@@ -78,9 +86,7 @@ public class Main {
 			throw new RuntimeException("Invalid arguments");
 		}
 
-		if (queueName.equalsIgnoreCase("LOCAL"))
-
-		{
+		if (queueName.equalsIgnoreCase("LOCAL")) {
 			sourceQueue = new LocalQueue();
 			resultQueue = new LocalQueue();
 			// start local client thread
@@ -96,6 +102,11 @@ public class Main {
 			System.out.println("Client joined");
 			workerPoolThread.terminate();
 			System.out.println("Worker terminated");
+		} else {
+			sourceQueue = new SQSQueue("default", queueName);
+			resultQueue = new SQSQueue("default", queueName.concat("-response"));
+			client = new Client(sourceQueue, resultQueue, filename);
+			client.doExperiment();
 		}
 	}
 
