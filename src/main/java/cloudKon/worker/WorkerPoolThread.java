@@ -17,7 +17,7 @@ public class WorkerPoolThread extends Thread {
 		}
 	}
 
-	public void terminate() {
+	public void terminate() throws InterruptedException {
 		this.workerPool.terminate();
 	}
 }

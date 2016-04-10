@@ -1,44 +1,47 @@
 package cloudKon.worker;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import cloudKon.queue.Queue;
-import cloudKon.task.Task;
 
 public class WorkerPool {
 
-	Integer poolSize;
-	Queue sourceQueue;
-	Queue resultQueue;
-	private boolean jobCompleted = false;
+	private Integer poolSize;
+	private Queue sourceQueue;
+	private Queue resultQueue;
+	private Set<Worker> workers;
+
+	private ExecutorService executor;
 
 	public WorkerPool(Integer poolSize, Queue sourceQueue, Queue resultQueue) {
 		super();
 		this.poolSize = poolSize;
 		this.sourceQueue = sourceQueue;
 		this.resultQueue = resultQueue;
+		this.workers = new HashSet<Worker>();
 	}
 
 	public void doWork() throws InterruptedException {
-		ExecutorService executor = Executors.newFixedThreadPool(this.poolSize);
-		while (!jobCompleted) {
-			Task task = sourceQueue.pop();
-			if (task != null) {
-				System.out.println("Pop Task: " + task);
-				Runnable worker = new Worker(sourceQueue, resultQueue, task);
-				executor.execute(worker);
-			} else {
-				Thread.sleep(10);
-			}
-		}
-		System.out.println("worker pool terminated");
-		executor.shutdown();
-		while (!executor.isTerminated()) {
+		executor = Executors.newFixedThreadPool(this.poolSize);
+		for (int i = 0; i < this.poolSize; i++) {
+			Worker worker = new Worker(sourceQueue, resultQueue);
+			executor.execute(worker);
+			workers.add(worker);
 		}
 	}
 
-	public void terminate() {
-		this.jobCompleted = true;
+	public void terminate() throws InterruptedException {
+		for (Worker worker : workers) {
+			worker.terminate();
+		}
+
+		executor.shutdown();
+		executor.awaitTermination(24L, TimeUnit.HOURS);
+		System.out.println("worker pool terminated");
+
 	}
 }
