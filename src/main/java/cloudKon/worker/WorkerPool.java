@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import cloudKon.queue.Queue;
+import cloudKon.validator.DuplicateValidator;
 
 public class WorkerPool {
 
@@ -14,21 +15,22 @@ public class WorkerPool {
 	private Queue sourceQueue;
 	private Queue resultQueue;
 	private Set<Worker> workers;
-
+	private DuplicateValidator duplicateValidator;
 	private ExecutorService executor;
 
-	public WorkerPool(Integer poolSize, Queue sourceQueue, Queue resultQueue) {
+	public WorkerPool(Integer poolSize, Queue sourceQueue, Queue resultQueue, DuplicateValidator duplicateValidator) {
 		super();
 		this.poolSize = poolSize;
 		this.sourceQueue = sourceQueue;
 		this.resultQueue = resultQueue;
+		this.duplicateValidator = duplicateValidator;
 		this.workers = new HashSet<Worker>();
 	}
 
 	public void doWork() throws InterruptedException {
 		executor = Executors.newFixedThreadPool(this.poolSize);
 		for (int i = 0; i < this.poolSize; i++) {
-			Worker worker = new Worker(sourceQueue, resultQueue);
+			Worker worker = new Worker(sourceQueue, resultQueue, duplicateValidator);
 			executor.execute(worker);
 			workers.add(worker);
 		}

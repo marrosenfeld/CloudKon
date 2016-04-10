@@ -9,7 +9,7 @@ import cloudKon.task.Task;
 public class DummyDuplicateValidator implements DuplicateValidator {
 
 	@Override
-	public Boolean isDuplicate(Task task) {
+	public Boolean validate(Task task) {
 		return true;
 	}
 

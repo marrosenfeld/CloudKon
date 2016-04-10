@@ -6,7 +6,7 @@ public interface DuplicateValidator {
 
 	/**
 	 * @param task
-	 * @return true if the task is duplicate
+	 * @return true if the task is validated
 	 */
-	Boolean isDuplicate(Task task);
+	Boolean validate(Task task);
 }

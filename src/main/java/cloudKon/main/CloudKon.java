@@ -8,6 +8,8 @@ import cloudKon.client.ClientThread;
 import cloudKon.queue.LocalQueue;
 import cloudKon.queue.Queue;
 import cloudKon.queue.SQSQueue;
+import cloudKon.validator.DummyDuplicateValidator;
+import cloudKon.validator.DynamoDBDuplicateValidator;
 import cloudKon.worker.WorkerPool;
 import cloudKon.worker.WorkerPoolThread;
 
@@ -19,7 +21,7 @@ public class CloudKon {
 		else if (args[0].equalsIgnoreCase("worker")) {
 			startWorker(args);
 		}
-		System.out.println("End");
+
 	}
 
 	/**
@@ -53,7 +55,8 @@ public class CloudKon {
 		resultQueue = new SQSQueue("default", queueName.concat("-response"));
 
 		// start worker pool thread
-		WorkerPool workerPool = new WorkerPool(poolSize, sourceQueue, resultQueue);
+		WorkerPool workerPool = new WorkerPool(poolSize, sourceQueue, resultQueue,
+				new DynamoDBDuplicateValidator("tasks"));
 		WorkerPoolThread workerPoolThread = new WorkerPoolThread(workerPool);
 		workerPoolThread.start();
 		workerPoolThread.join();
@@ -105,7 +108,7 @@ public class CloudKon {
 			ClientThread clientThread = new ClientThread(client);
 			clientThread.start();
 			// start local worker pool thread
-			WorkerPool workerPool = new WorkerPool(poolSize, sourceQueue, resultQueue);
+			WorkerPool workerPool = new WorkerPool(poolSize, sourceQueue, resultQueue, new DummyDuplicateValidator());
 			WorkerPoolThread workerPoolThread = new WorkerPoolThread(workerPool);
 			workerPoolThread.start();
 
