@@ -4,6 +4,9 @@ import java.util.LinkedList;
 
 import cloudKon.task.Task;
 
+/**
+ * @author mrosenfeld In memory queue implementation
+ */
 public class LocalQueue extends AbstractQueue {
 	private java.util.Queue<Task> queue;
 

@@ -9,6 +9,9 @@ import java.util.UUID;
 import cloudKon.queue.Queue;
 import cloudKon.task.Task;
 
+/**
+ * @author mrosenfeld Client side of cloudKon
+ */
 public class Client {
 	private Queue sourceQueue;
 	private Queue resultQueue;
@@ -21,11 +24,22 @@ public class Client {
 		this.filename = filename;
 	}
 
+	/**
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws InterruptedException
+	 *             push the tasks and wait to receive the ack's
+	 */
 	public void doExperiment() throws FileNotFoundException, IOException, InterruptedException {
 		Integer countTasks = this.pushTasks();
 		this.receiveResults(countTasks);
 	}
 
+	/**
+	 * @param countTasks
+	 * @throws InterruptedException
+	 *             Receive the ack for all tasks from the resultqueue.
+	 */
 	private void receiveResults(Integer countTasks) throws InterruptedException {
 		Integer completedTasks = 0;
 		while (completedTasks < countTasks) {
@@ -41,6 +55,12 @@ public class Client {
 
 	}
 
+	/**
+	 * @return the number of tasks pushed
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 *             Push tasks to the source queue
+	 */
 	private Integer pushTasks() throws FileNotFoundException, IOException {
 		Integer countTasks = 0;
 		try (BufferedReader br = new BufferedReader(new FileReader(filename))) {

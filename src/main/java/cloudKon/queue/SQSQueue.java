@@ -18,11 +18,19 @@ import com.amazonaws.services.sqs.model.SendMessageRequest;
 
 import cloudKon.task.Task;
 
+/**
+ * @author mrosenfeld SQS queue implementation
+ */
 public class SQSQueue extends AbstractQueue {
 
 	private AmazonSQS sqs;
 	private String queueUrl;
 
+	/**
+	 * @param profile
+	 * @param queueName
+	 *            Gets the queue url for the queue name
+	 */
 	public SQSQueue(String profile, String queueName) {
 		/*
 		 * The ProfileCredentialsProvider will return your [default] credential
@@ -43,12 +51,18 @@ public class SQSQueue extends AbstractQueue {
 		this.queueUrl = sqs.getQueueUrl(queueName).getQueueUrl();
 	}
 
+	/*
+	 * Push task as sqs message
+	 */
 	@Override
 	public void push(Task task) {
 		sqs.sendMessage(new SendMessageRequest(queueUrl,
 				task.getId().toString().concat(",").concat(task.getSleepTime().toString())));
 	}
 
+	/*
+	 * pop task from sqs Returns null if no message available
+	 */
 	@Override
 	public Task pop() {
 		ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest(this.queueUrl);
@@ -59,6 +73,7 @@ public class SQSQueue extends AbstractQueue {
 			sqs.deleteMessage(new DeleteMessageRequest(this.queueUrl, message.getReceiptHandle()));
 			Task task = new Task(UUID.fromString(message.getBody().split(",")[0]),
 					Long.parseLong(message.getBody().split(",")[1]));
+
 			return task;
 		} else {
 			return null;

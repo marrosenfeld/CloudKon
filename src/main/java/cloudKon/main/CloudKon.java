@@ -8,7 +8,6 @@ import cloudKon.client.ClientThread;
 import cloudKon.queue.LocalQueue;
 import cloudKon.queue.Queue;
 import cloudKon.queue.SQSQueue;
-import cloudKon.worker.Worker;
 import cloudKon.worker.WorkerPool;
 import cloudKon.worker.WorkerPoolThread;
 
@@ -23,12 +22,16 @@ public class CloudKon {
 		System.out.println("End");
 	}
 
+	/**
+	 * @param args
+	 * @throws InterruptedException
+	 *             Parse arguments and start worker side
+	 */
 	private static void startWorker(String[] args) throws InterruptedException {
 		String queueName = null;
 		Integer poolSize = null;
 		Queue sourceQueue;
 		Queue resultQueue;
-		Worker worker;
 
 		for (int i = 0; i < args.length; i++) {
 			switch (args[i]) {
@@ -57,6 +60,14 @@ public class CloudKon {
 
 	}
 
+	/**
+	 * @param args
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws InterruptedException
+	 *             Parse arguments and start client side. If LOCAL, also starts
+	 *             local worker
+	 */
 	private static void startClient(String[] args) throws FileNotFoundException, IOException, InterruptedException {
 		String queueName = null;
 		String filename = null;

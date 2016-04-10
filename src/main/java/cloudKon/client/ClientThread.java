@@ -2,6 +2,9 @@ package cloudKon.client;
 
 import java.io.IOException;
 
+/**
+ * @author mrosenfeld Thread that runs the client side
+ */
 public class ClientThread extends Thread {
 	private Client client;
 
