@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import cloudKon.queue.Queue;
@@ -31,8 +33,14 @@ public class Client {
 	 *             push the tasks and wait to receive the ack's
 	 */
 	public void doExperiment() throws FileNotFoundException, IOException, InterruptedException {
-		Integer countTasks = this.pushTasks();
-		this.receiveResults(countTasks);
+		final long startTime = System.currentTimeMillis();
+
+		List<UUID> taskIds = this.pushTasks();
+
+		this.receiveResults(taskIds);
+		final long endTime = System.currentTimeMillis();
+
+		System.out.println("Total execution time: " + (endTime - startTime));
 	}
 
 	/**
@@ -40,15 +48,23 @@ public class Client {
 	 * @throws InterruptedException
 	 *             Receive the ack for all tasks from the resultqueue.
 	 */
-	private void receiveResults(Integer countTasks) throws InterruptedException {
-		Integer completedTasks = 0;
-		while (completedTasks < countTasks) {
+	private void receiveResults(List<UUID> taskIds) throws InterruptedException {
+		Integer count = 0;
+		while (!taskIds.isEmpty()) {
 			Task task = this.resultQueue.pop();
 			if (task != null) {
-				completedTasks++;
-				System.out.println("Received completed task: " + task.getId());
+				if (!task.getSuccess()) {
+					System.out.println("Error: failed task: " + task.getId());
+				}
+				if (!taskIds.remove(task.getId())) {
+					System.out.println("Warning: receive id not expected");
+				}
+				count++;
+				if (count % 100 == 0) {
+					System.out.println("Already received: " + count);
+				}
 			} else {
-				Thread.sleep(10);
+				Thread.sleep(1000);
 			}
 		}
 		System.out.println("All tasks completed");
@@ -61,20 +77,21 @@ public class Client {
 	 * @throws IOException
 	 *             Push tasks to the source queue
 	 */
-	private Integer pushTasks() throws FileNotFoundException, IOException {
-		Integer countTasks = 0;
+	private List<UUID> pushTasks() throws FileNotFoundException, IOException {
+
+		List<UUID> taskIds = new ArrayList<UUID>();
 		try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
 			String line;
 			while ((line = br.readLine()) != null) {
 				Long sleepTime = Long.valueOf(line.split(" ")[1]);
 				Task task = new Task(UUID.randomUUID(), sleepTime);
 				sourceQueue.push(task);
-				countTasks++;
-				System.out.println("Push task: " + task);
+				taskIds.add(task.getId());
+				// System.out.println("Push task: " + task);
 			}
 		}
-		System.out.println("Push tasks: " + countTasks);
-		return countTasks;
+		System.out.println("Push tasks: " + taskIds.size());
+		return taskIds;
 	}
 
 }

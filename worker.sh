@@ -1,1 +1,1 @@
-java -cp target/cloudKon.jar cloudKon.main.CloudKon worker -s myqueue -t 2
+java -cp cloudKon.jar cloudKon.main.CloudKon worker -s myqueue -t 1

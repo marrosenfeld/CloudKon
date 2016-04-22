@@ -53,7 +53,6 @@ public class DynamoDBDuplicateValidator implements DuplicateValidator {
 
 		try {
 			PutItemResult putItemResult = dynamoDB.putItem(putItemRequest);
-			System.out.println("Result: " + putItemResult);
 		} catch (Exception e) {
 			return false;
 		}

@@ -56,8 +56,8 @@ public class SQSQueue extends AbstractQueue {
 	 */
 	@Override
 	public void push(Task task) {
-		sqs.sendMessage(new SendMessageRequest(queueUrl,
-				task.getId().toString().concat(",").concat(task.getSleepTime().toString())));
+		sqs.sendMessage(new SendMessageRequest(queueUrl, task.getId().toString().concat(",")
+				.concat(task.getSleepTime().toString()).concat(",").concat(task.getSuccess().toString())));
 	}
 
 	/*
@@ -72,7 +72,8 @@ public class SQSQueue extends AbstractQueue {
 			Message message = receiveMessageResult.getMessages().get(0);
 			sqs.deleteMessage(new DeleteMessageRequest(this.queueUrl, message.getReceiptHandle()));
 			Task task = new Task(UUID.fromString(message.getBody().split(",")[0]),
-					Long.parseLong(message.getBody().split(",")[1]));
+					Long.parseLong(message.getBody().split(",")[1]),
+					Boolean.parseBoolean(message.getBody().split(",")[2]));
 
 			return task;
 		} else {
