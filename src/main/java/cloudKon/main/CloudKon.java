@@ -113,9 +113,9 @@ public class CloudKon {
 			workerPoolThread.start();
 
 			clientThread.join();
-			System.out.println("Client joined");
+			// System.out.println("Client joined");
 			workerPoolThread.terminate();
-			System.out.println("Worker terminated");
+			// System.out.println("Worker terminated");
 		} else {
 			sourceQueue = new SQSQueue("default", queueName);
 			resultQueue = new SQSQueue("default", queueName.concat("-response"));

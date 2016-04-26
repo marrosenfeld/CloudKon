@@ -43,7 +43,7 @@ public class WorkerPool {
 
 		executor.shutdown();
 		executor.awaitTermination(24L, TimeUnit.HOURS);
-		System.out.println("worker pool terminated");
+		// System.out.println("worker pool terminated");
 
 	}
 }

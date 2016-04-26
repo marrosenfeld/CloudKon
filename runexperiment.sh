@@ -6,4 +6,4 @@ for i in $(eval echo {1..$numberoftasks});
         do
                 echo 'sleep' $sleeptime >> tasks
         done
-./client.sh
+./client.sh $3
