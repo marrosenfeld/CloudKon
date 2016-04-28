@@ -5,8 +5,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import cloudKon.queue.Queue;
 import cloudKon.task.Task;
@@ -48,25 +52,18 @@ public class Client {
 	 * @throws InterruptedException
 	 *             Receive the ack for all tasks from the resultqueue.
 	 */
-	private void receiveResults(List<UUID> taskIds) throws InterruptedException {
+	private void receiveResults(List<UUID> taskIdsList) throws InterruptedException {
 		Integer count = 0;
-		while (!taskIds.isEmpty()) {
-			Task task = this.resultQueue.pop();
-			if (task != null) {
-				if (!task.getSuccess()) {
-					System.out.println("Error: failed task: " + task.getId());
-				}
-				if (!taskIds.remove(task.getId())) {
-					System.out.println("Warning: receive id not expected");
-				}
-				count++;
-				if (count % 100 == 0) {
-					System.out.println("Already received: " + count);
-				}
-			} else {
-				Thread.sleep(1000);
-			}
+		List<UUID> taskIds = Collections.synchronizedList(taskIdsList);
+		ExecutorService executor = Executors.newFixedThreadPool(8);
+		for (int i = 0; i < 8; i++) {
+			ReceiverThread receiver = new ReceiverThread(taskIds, resultQueue);
+			executor.execute(receiver);
+
 		}
+
+		executor.shutdown();
+		executor.awaitTermination(24L, TimeUnit.HOURS);
 		System.out.println("All tasks completed");
 
 	}
