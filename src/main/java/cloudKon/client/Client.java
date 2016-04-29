@@ -38,9 +38,9 @@ public class Client {
 	 */
 	public void doExperiment() throws FileNotFoundException, IOException, InterruptedException {
 		final long startTime = System.currentTimeMillis();
-
+		// push tasks
 		List<UUID> taskIds = this.pushTasks();
-
+		// receive results
 		this.receiveResults(taskIds);
 		final long endTime = System.currentTimeMillis();
 
@@ -79,12 +79,13 @@ public class Client {
 		List<UUID> taskIds = new ArrayList<UUID>();
 		try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
 			String line;
+			// get one task per line
 			while ((line = br.readLine()) != null) {
 				Long sleepTime = Long.valueOf(line.split(" ")[1]);
 				Task task = new Task(UUID.randomUUID(), sleepTime);
+				// push task to queue
 				sourceQueue.push(task);
 				taskIds.add(task.getId());
-				// System.out.println("Push task: " + task);
 			}
 		}
 		System.out.println("Push tasks: " + taskIds.size());

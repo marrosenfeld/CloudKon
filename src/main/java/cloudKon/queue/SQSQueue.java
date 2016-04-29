@@ -61,7 +61,7 @@ public class SQSQueue extends AbstractQueue {
 	}
 
 	/*
-	 * pop task from sqs Returns null if no message available
+	 * pop task from sqs. Returns null if no message available
 	 */
 	@Override
 	public Task pop() {
@@ -70,6 +70,7 @@ public class SQSQueue extends AbstractQueue {
 		ReceiveMessageResult receiveMessageResult = sqs.receiveMessage(receiveMessageRequest);
 		if (receiveMessageResult.getMessages().size() > 0) {
 			Message message = receiveMessageResult.getMessages().get(0);
+			// delete message from sqs
 			sqs.deleteMessage(new DeleteMessageRequest(this.queueUrl, message.getReceiptHandle()));
 			Task task = new Task(UUID.fromString(message.getBody().split(",")[0]),
 					Long.parseLong(message.getBody().split(",")[1]),

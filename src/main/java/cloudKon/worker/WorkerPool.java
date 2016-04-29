@@ -9,6 +9,9 @@ import java.util.concurrent.TimeUnit;
 import cloudKon.queue.Queue;
 import cloudKon.validator.DuplicateValidator;
 
+/**
+ * @author mrosenfeld Pool of workers
+ */
 public class WorkerPool {
 
 	private Integer poolSize;
@@ -43,7 +46,6 @@ public class WorkerPool {
 
 		executor.shutdown();
 		executor.awaitTermination(24L, TimeUnit.HOURS);
-		// System.out.println("worker pool terminated");
 
 	}
 }

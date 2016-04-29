@@ -4,6 +4,9 @@ import cloudKon.queue.Queue;
 import cloudKon.task.Task;
 import cloudKon.validator.DuplicateValidator;
 
+/**
+ * @author mrosenfeld Worker implementation
+ */
 public class Worker implements Runnable {
 	// private Task task;
 	private Queue resultQueue;
@@ -22,13 +25,15 @@ public class Worker implements Runnable {
 	@Override
 	public void run() {
 		Integer count = 0;
+		// pool the soure queue until job is completed
 		while (!jobCompleted) {
 			Task task = sourceQueue.pop();
 			if (task != null) {
-				// System.out.println("Pop Task: " + task);
+
 				if (duplicateValidator.validate(task)) {
 					count++;
 					try {
+						// perform sleep task
 						Thread.sleep(task.getSleepTime());
 						task.setSuccess(true);
 					} catch (Exception e) {

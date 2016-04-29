@@ -3,7 +3,7 @@ package cloudKon.queue;
 import cloudKon.task.Task;
 
 /**
- * @author mrosenfeld Interface for queue
+ * @author mrosenfeld Interface for queue with basic queue operations
  */
 public interface Queue {
 

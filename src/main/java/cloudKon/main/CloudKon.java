@@ -34,7 +34,7 @@ public class CloudKon {
 		Integer poolSize = null;
 		Queue sourceQueue;
 		Queue resultQueue;
-
+		// parse parameters
 		for (int i = 0; i < args.length; i++) {
 			switch (args[i]) {
 			case "-s":
@@ -113,9 +113,7 @@ public class CloudKon {
 			workerPoolThread.start();
 
 			clientThread.join();
-			// System.out.println("Client joined");
 			workerPoolThread.terminate();
-			// System.out.println("Worker terminated");
 		} else {
 			sourceQueue = new SQSQueue("default", queueName);
 			resultQueue = new SQSQueue("default", queueName.concat("-response"));

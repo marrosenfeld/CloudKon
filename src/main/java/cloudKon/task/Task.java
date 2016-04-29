@@ -2,7 +2,11 @@ package cloudKon.task;
 
 import java.util.UUID;
 
+/**
+ * @author mrosenfeld Task to be distributed
+ */
 public class Task {
+	// uniqeu identification of the task
 	UUID id;
 	Long sleepTime;
 	Boolean success;

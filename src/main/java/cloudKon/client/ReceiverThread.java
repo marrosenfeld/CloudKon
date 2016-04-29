@@ -6,6 +6,10 @@ import java.util.UUID;
 import cloudKon.queue.Queue;
 import cloudKon.task.Task;
 
+/**
+ * @author mrosenfeld Receives all tasks from the result queue. Validates that
+ *         all tasks ack's are received
+ */
 public class ReceiverThread extends Thread {
 	private List<UUID> taskIds;
 	private Queue resultQueue;
@@ -19,6 +23,7 @@ public class ReceiverThread extends Thread {
 	@Override
 	public void run() {
 		Integer count = 0;
+		// pop task while not all tasks have been received
 		while (!taskIds.isEmpty()) {
 			Task task = this.resultQueue.pop();
 			if (task != null) {

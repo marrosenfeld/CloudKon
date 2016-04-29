@@ -2,6 +2,9 @@ package cloudKon.validator;
 
 import cloudKon.task.Task;
 
+/**
+ * @author mrosenfeld Interface of duplicate validators
+ */
 public interface DuplicateValidator {
 
 	/**
